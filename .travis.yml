@@ -2,8 +2,22 @@ language: node_js
 node_js:
   - 14
 
+services:
+  - docker
+
+# Pre-testing installs
 install:
-  - npm install
+  - echo "nothing needs to be installed"
+
+# Scripts to be run such as tests
+before_script:
+  - echo "no test"
 
 script:
-  - npm run test
+  - docker --version # print the version for logging
+  - docker build -t travis-ci-simple .
+  - docker tag travis-ci-simple mdt381/travis-ci-simple:latest
+
+after_success:
+  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+  - docker push mdt381/travis-ci-simple
